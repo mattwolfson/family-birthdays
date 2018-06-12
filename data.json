@@ -1,14 +1,282 @@
 [
  {
-   "firstName": "Ryder",
-   "lastName": "Montag",
-   "month": "January",
-   "day": 16
+   "firstName": "ryder",
+   "lastName": "montag",
+   "month": 1,
+   "day": 16,
+   "gender": "m"
  },
  {
-   "firstName": "Marty",
-   "lastName": "Wolfson",
-   "month": "April",
-   "day": 1
+   "firstName": "marty",
+   "lastName": "wolfson",
+   "month": 4,
+   "day": 1,
+   "gender": "m"
+ },
+ {
+   "firstName": "ben",
+   "lastName": "scrivanich",
+   "month": 1,
+   "day": 17,
+   "gender": "m"
+ },
+ {
+   "firstName": "mindy",
+   "lastName": "wolfson",
+   "month": 1,
+   "day": 20,
+   "gender": "f"
+ },
+ {
+   "firstName": "adam",
+   "lastName": "wolfson",
+   "month": 1,
+   "day": 25,
+   "gender": "m"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "donna",
+   "month": 1,
+   "day": 29,
+   "gender": "f"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "sarann",
+   "month": 1,
+   "day": 30,
+   "gender": "f"
+ },
+ {
+   "firstName": "cameron",
+   "lastName": "montag",
+   "month": 2,
+   "day": 5,
+   "gender": "m"
+ },
+ {
+   "firstName": "collin",
+   "lastName": "montag",
+   "month": 2,
+   "day": 11,
+   "gender": "m"
+ },
+ {
+   "firstName": "elana",
+   "lastName": "martin",
+   "month": 2,
+   "day": 24,
+   "gender": "f"
+ },
+ {
+   "firstName": "brian",
+   "lastName": "montag",
+   "month": 3,
+   "day": 4,
+   "gender": "m"
+ },
+ {
+   "firstName": "kevin",
+   "lastName": "wolfson",
+   "month": 3,
+   "day": 13,
+   "gender": "m"
+ },
+ {
+   "firstName": "brody",
+   "lastName": "montag",
+   "month": 3,
+   "day": 18,
+   "gender": "m"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "lynne",
+   "month": 4,
+   "day": 11,
+   "gender": "f"
+ },
+ {
+   "firstName": "rachel",
+   "lastName": "scrivanich",
+   "month": 4,
+   "day": 15,
+   "gender": "f"
+ },
+ {
+   "firstName": "jamie",
+   "lastName": "thoubboron",
+   "month": 5,
+   "day": 28,
+   "gender": "f"
+ },
+ {
+   "firstName": "elyse",
+   "lastName": "wolfson",
+   "month": 5,
+   "day": 28,
+   "gender": "f"
+ },
+ {
+   "firstName": "marla",
+   "lastName": "martin",
+   "month": 6,
+   "day": 15,
+   "gender": "f"
+ },
+ {
+   "firstName": "lani",
+   "lastName": "",
+   "month": 6,
+   "day": 16,
+   "gender": "f"
+ },
+ {
+   "firstName": "nannie",
+   "lastName": "montag",
+   "month": 6,
+   "day": 20,
+   "gender": "f"
+ },
+ {
+   "firstName": "jill",
+   "lastName": "wolfson",
+   "month": 7,
+   "day": 5,
+   "gender": "f"
+ },
+ {
+   "firstName": "royce",
+   "lastName": "cabrera",
+   "month": 7,
+   "day": 3,
+   "gender": "m"
+ },
+ {
+   "firstName": "mike",
+   "lastName": "wolfson",
+   "month": 7,
+   "day": 20,
+   "gender": "m"
+ },
+ {
+   "firstName": "willie",
+   "lastName": "montag",
+   "month": 7,
+   "day": 23,
+   "gender": "m"
+ },
+ {
+   "firstName": "larry",
+   "lastName": "wolfson",
+   "month": 7,
+   "day": 29,
+   "gender": "m"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "nes",
+   "month": 8,
+   "day": 15,
+   "gender": "m"
+ },
+ {
+   "firstName": "uncle",
+   "lastName": "david",
+   "month": 9,
+   "day": 5,
+   "gender": "m"
+ },
+ {
+   "firstName": "uncle",
+   "lastName": "donna",
+   "month": 9,
+   "day": 19,
+   "gender": "m"
+ },
+ {
+   "firstName": "matt",
+   "lastName": "wolfson",
+   "month": 10,
+   "day": 13,
+   "gender": "m"
+ },
+ {
+   "firstName": "bryan",
+   "lastName": "kayne",
+   "month": 10,
+   "day": 14,
+   "gender": "m"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "debbie",
+   "month": 10,
+   "day": 27,
+   "gender": "f"
+ },
+ {
+   "firstName": "caroline",
+   "lastName": "cantow",
+   "month": 11,
+   "day": 8,
+   "gender": "f"
+ },
+ {
+   "firstName": "uncle",
+   "lastName": "kevin",
+   "month": 11,
+   "day": 17,
+   "gender": "f"
+ },
+ {
+   "firstName": "michael",
+   "lastName": "cantow",
+   "month": 11,
+   "day": 30,
+   "gender": "m"
+ },
+ {
+   "firstName": "sara",
+   "lastName": "rifkin",
+   "month": 12,
+   "day": 1,
+   "gender": "f"
+ },
+ {
+   "firstName": "marissa",
+   "lastName": "wolfson",
+   "month": 12,
+   "day": 2,
+   "gender": "f"
+ },
+ {
+   "firstName": "lara",
+   "lastName": "wolfson",
+   "month": 12,
+   "day": 18,
+   "gender": "f"
+ },
+ {
+   "firstName": "aunt",
+   "lastName": "lauren",
+   "month": 12,
+   "day": 19,
+   "gender": "f"
+ },
+ {
+   "firstName": "russel",
+   "lastName": "thoubboron",
+   "month": 12,
+   "day": 24,
+   "gender": "m"
+ },
+ {
+   "firstName": "sophia",
+   "lastName": "modrak",
+   "month": 12,
+   "day": 30,
+   "gender": "f"
  }
 ]

@@ -7,7 +7,7 @@ const Alexa = require("alexa-sdk"); // import the library
 
 //Replace with your app ID (OPTIONAL).  You can find this value at the top of your skill's page on http://developer.amazon.com.
 //Make sure to enclose your value in quotes, like this:  const APP_ID = "amzn1.ask.skill.bb4045e6-b3e8-4133-b650-72923c5980f1";
-const APP_ID = amzn1.ask.skill.da5bd940-37b8-4d6b-90b3-897999b102e2;
+const APP_ID = "amzn1.ask.skill.da5bd940-37b8-4d6b-90b3-897999b102e2";
 
 // =====================================================================================================
 // --------------------------------- Section 1. Data and Text strings  ---------------------------------
@@ -445,12 +445,30 @@ function searchByNameIntentHandler(){
 		this.attributes.lastSearch.lastIntent = "SearchByNameIntent";
 
 		if (searchResults.count > 1) { //multiple results found
-			console.log("Search complete. Multiple results were found");
-			let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
-			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
-			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
-			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
+			var secondSearchWorked = false;
+			if (canSearh === 'lastName' && firstname) {
+				var secondSearch = 'firstName';
+				var searchQuery = this.event.request.intent.slots[secondSearch].value;
+				console.log('here!!!', 'past results', lastSearch.results);
+				var secondSearchResults = searchDatabase(lastSearch.results, searchQuery, secondSearch);
+				console.log(secondSearchResults);
+				if (searchResults.count == 1) {
+					secondSearchWorked = true;
+					console.log("no infoType was provided.");
+					output = generateSearchResultsMessage(searchQuery,secondSearchResults.results);
+					this.attributes.lastSearch.lastSpeech = output;
+					this.response.speak(output).listen(output);
+				}
+			} 
+			if (!secondSearchWorked) {
+				console.log("Search complete. Multiple results were found");
+				let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
+				output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
+				this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
+				this.attributes.lastSearch.lastSpeech = output;
+				this.response.speak(output).listen(output);
+			}
+	
 		} else if (searchResults.count == 1) { //one result found
 			this.handler.state = states.DESCRIPTION; // change state to description
 			console.log("one match was found");
@@ -620,12 +638,11 @@ function searchByInfoTypeIntentHandler(){
 // =====================================================================================================
 
 function generateNextPromptMessage(person,mode){
-	let infoTypes = ["git-hub username","twitter handle","linked-in"];
 	let prompt;
 
 	if (mode == "current"){
 		// if the mode is current, we should give more informaiton about the current contact
-		prompt = ". You can say - tell me more, or  tell me " + genderize("his-her", person.gender) + " " + infoTypes[getRandom(0,infoTypes.length-1)];
+		prompt = ". You can say - when is " + getRandomName(data) + "'s birthday.";
 	}
 	//if the mode is general, we should provide general help information
 	else if (mode == "general"){
@@ -651,7 +668,7 @@ function generateSearchResultsMessage(searchQuery,results){
 			break;
 		case (results.length == 1):
 			let person = results[0];
-			details = person.firstName + " " + person.lastName + " is " + person.title + ", based out of " + person.cityName;
+			details = person.firstName + " " + person.lastName + "'s birthday is " + sayMonth(person.month) + " " + sayDay(person.day);
 			prompt = generateNextPromptMessage(person,"current");
 			sentence = details + prompt;
 			console.log(sentence);
@@ -664,12 +681,24 @@ function generateSearchResultsMessage(searchQuery,results){
 	else{
 		sentence = "Sorry, I didn't quite get that. " + getGenericHelpMessage(data);
 	}
-	return sentence;
+	return optimizeForSpeech(sentence);
+}
+
+function sayMonth(monthNumber){
+	const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	return months[monthNumber - 1] ?  months[monthNumber - 1] : monthNumber;
+}
+
+function sayDay(dayNumber){
+	const days = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twevlfth", "thirteenth", "fourteenth",
+		"fiftheenth", "sixteenth", "seventeeth", "eightteenth", "nineteenth", "twentieth", "twenty first", "twenty second", "twenty third", "twenty fourth", 
+		"twenty fifth", "twenty sixth", "twenty seventh", "twenty eighth", "twenty ninth", "thirtieth", "thirty first"];
+	return days[dayNumber - 1] ? days[dayNumber - 1] : dayNumber;
 }
 
 function getGenericHelpMessage(data){
 	let sentences = ["ask - when is " + getRandomName(data) + "'s birthday.","say - who's birthday is next"];
-	return "You can " + sentences[getRandom(0,sentences.length-1)];
+	return optimizeForSpeech("You can " + sentences[getRandom(0,sentences.length-1)]);
 }
 
 function generateSearchHelpMessage(gender){
@@ -713,10 +742,6 @@ exports.handler = function(event, context, callback) {
 
 function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function getRandomCity(arrayOfStrings) {
-	return arrayOfStrings[getRandom(0, data.length - 1)].cityName;
 }
 
 function getRandomName(arrayOfStrings) {
@@ -767,7 +792,7 @@ function sanitizeSearchQuery(searchQuery){
 }
 
 function optimizeForSpeech(str){
-	let optimizedString = str.replace("github","git-hub");
+	let optimizedString = str.replace("montag","mon tag");
 	return optimizedString;
 }
 
