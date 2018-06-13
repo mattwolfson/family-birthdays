@@ -213,39 +213,61 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 		let infoType = isSlotValid(this.event.request, "infoType");
 
 		console.log("firstName:" + firstName);
-		console.log("firstName:" + lastName);
-		console.log("firstName:" + cityName);
-		console.log("firstName:" + infoType);
+		console.log("lastName:" + lastName);
+		console.log("cityName:" + cityName);
+		console.log("infoType:" + infoType);
 		console.log("Intent Name:" + this.event.request.intent.name);
 
 		let canSearch = figureOutWhichSlotToSearchBy(firstName,lastName,cityName);
 		console.log("Multiple results found. canSearch is set to = " + canSearch);
 		let speechOutput;
 
-		if (canSearch)
-			var searchQuery = slots[canSearch].value;
-		var searchResults = searchDatabase(this.attributes.lastSearch.results, searchQuery, canSearch);
-		var lastSearch;
-		var output;
+		if (canSearch) {
+			let searchQuery = "";
+			let searchResults;
+			var data = this.attributes.lastSearch.results;
 
-		if (searchResults.count > 1) { //multiple results found again
-			console.log("multiple results were found again");
-			this.handler.state = states.MULTIPLE_RESULTS;
-			output = this.attributes.lastSearch.lastSpeech;
-			this.response.speak(output).listen(output);
-		} else if (searchResults.count == 1) { //one result found
-			this.attributes.lastSearch = searchResults;
-			lastSearch = this.attributes.lastSearch;
-			this.handler.state = states.DESCRIPTION;
-			output = generateSearchResultsMessage(searchQuery,searchResults.results);
-			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
+			if (canSearch.constructor === Array) {
+				let searchQueryArray = [];
+				for (let i = 0; i < canSearch.length; i++) {
+					let query = this.event.request.intent.slots[canSearch[i]].value;
+					searchQuery += query + " ";
+					searchQueryArray.push(query);
+				}
+				searchResults = loopSearchDatabase(data, searchQueryArray, canSearch);
+			} else {
+				searchQuery = this.event.request.intent.slots[canSearch].value;
+				searchResults = searchDatabase(data, searchQuery, canSearch);
+			}
 
-		} else { //no match found
-			lastSearch = this.attributes.lastSearch;
-			let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
-			speechOutput = MULTIPLE_RESULTS_STATE_HELP_MESSAGE + ", " + listOfPeopleFound;
-			this.response.speak(speechOutput).listen(speechOutput);
+			var lastSearch;
+			var output;
+
+			if (searchResults.count > 1) { //multiple results found again
+				console.log("multiple results were found again");
+				this.handler.state = states.MULTIPLE_RESULTS;
+				output = this.attributes.lastSearch.lastSpeech;
+				this.response.speak(output).listen(output);
+			} else if (searchResults.count == 1) { //one result found
+				this.attributes.lastSearch = searchResults;
+				lastSearch = this.attributes.lastSearch;
+				this.handler.state = states.DESCRIPTION;
+				output = generateSearchResultsMessage(searchQuery,searchResults.results);
+				this.attributes.lastSearch.lastSpeech = output;
+				this.response.speak(output).listen(output);
+
+			} else { //no match found
+				lastSearch = this.attributes.lastSearch;
+				let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
+				speechOutput = MULTIPLE_RESULTS_STATE_HELP_MESSAGE + ", " + listOfPeopleFound;
+				this.response.speak(speechOutput).listen(speechOutput);
+			}
+		} else {
+			console.log("no searchable slot was provided");
+			console.log("searchQuery was  = " + searchQuery);
+			console.log("searchResults.results was  = " + searchResults);
+
+			this.response.speak(generateSearchResultsMessage(searchQuery,false)).listen(generateSearchResultsMessage(searchQuery,false));
 		}
 		this.emit(':responseReady');
 	},
@@ -381,7 +403,26 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 
 // ------------------------- END of Intent Handlers  ---------------------------------
 
+function loopSearchDatabase(dataset, searchQueryArray, searchTypeArray) {
+	console.log('In loop search database');
+	let dataToSearch = dataset;
+	let resultObject;
+
+	for (let i = 0; i < searchTypeArray.length; i++) {
+		resultObject = searchDatabase(dataToSearch, searchQueryArray[i], searchTypeArray[i]);
+		console.log('results:',resultObject);
+		if (resultObject.count < 2) {
+			break;
+		}
+		dataToSearch = resultObject.results;
+	}
+
+	return resultObject;
+}
+
 function searchDatabase(dataset, searchQuery, searchType) {
+	console.log('In searchDatabase Function');
+	console.log('Search Query', searchQuery, 'Search Type', searchType);
 	let matchFound = false;
 	let results = [];
 
@@ -406,21 +447,21 @@ function searchDatabase(dataset, searchQuery, searchType) {
 }
 
 function figureOutWhichSlotToSearchBy(firstName,lastName,cityName) {
-	if (lastName){
-		console.log("search by lastName");
-		return "lastName";
-	}
-	else if (!lastName && firstName){
-		console.log("search by firstName");
-		return "firstName";
-	}
-	else if (!lastName && !firstName && cityName){
-		console.log("search by cityName");
-		return "cityName";
-	}
-	else{
+	let slotsToSearchBy = [];
+
+	if (lastName) { slotsToSearchBy.push("lastName"); }
+	if (firstName) { slotsToSearchBy.push("firstName"); }
+	if (cityName) { slotsToSearchBy.push("cityName"); }
+
+	if (slotsToSearchBy.length === 0) {
 		console.log("no valid slot provided. can't search.");
 		return false;
+	} else if (slotsToSearchBy.length === 1) {
+		console.log("search by " +  slotsToSearchBy[0]);
+		return slotsToSearchBy[0];
+	} else {
+		console.log("search by multiple slots " + slotsToSearchBy);
+		return slotsToSearchBy;
 	}
 }
 
@@ -434,8 +475,20 @@ function searchByNameIntentHandler(){
 	console.log("canSearch is set to = " + canSearch);
 
 	if (canSearch){
-		var searchQuery = this.event.request.intent.slots[canSearch].value;
-		var searchResults = searchDatabase(data, searchQuery, canSearch);
+		let searchQuery = "";
+		let searchResults;
+		if (canSearch.constructor === Array) {
+			let searchQueryArray = [];
+			for (let i = 0; i < canSearch.length; i++) {
+				let query = this.event.request.intent.slots[canSearch[i]].value;
+				searchQuery += query + " ";
+				searchQueryArray.push(query);
+			}
+			searchResults = loopSearchDatabase(data, searchQueryArray, canSearch);
+		} else {
+			searchQuery = this.event.request.intent.slots[canSearch].value;
+			searchResults = searchDatabase(data, searchQuery, canSearch);
+		}
 
 		//saving lastSearch results to the current session
 		var lastSearch = this.attributes.lastSearch = searchResults;
@@ -445,30 +498,12 @@ function searchByNameIntentHandler(){
 		this.attributes.lastSearch.lastIntent = "SearchByNameIntent";
 
 		if (searchResults.count > 1) { //multiple results found
-			var secondSearchWorked = false;
-			if (canSearh === 'lastName' && firstname) {
-				var secondSearch = 'firstName';
-				var searchQuery = this.event.request.intent.slots[secondSearch].value;
-				console.log('here!!!', 'past results', lastSearch.results);
-				var secondSearchResults = searchDatabase(lastSearch.results, searchQuery, secondSearch);
-				console.log(secondSearchResults);
-				if (searchResults.count == 1) {
-					secondSearchWorked = true;
-					console.log("no infoType was provided.");
-					output = generateSearchResultsMessage(searchQuery,secondSearchResults.results);
-					this.attributes.lastSearch.lastSpeech = output;
-					this.response.speak(output).listen(output);
-				}
-			} 
-			if (!secondSearchWorked) {
-				console.log("Search complete. Multiple results were found");
-				let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
-				output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
-				this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
-				this.attributes.lastSearch.lastSpeech = output;
-				this.response.speak(output).listen(output);
-			}
-	
+			console.log("Search complete. Multiple results were found");
+			let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
+			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
+			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
+			this.attributes.lastSearch.lastSpeech = output;
+			this.response.speak(output).listen(output);
 		} else if (searchResults.count == 1) { //one result found
 			this.handler.state = states.DESCRIPTION; // change state to description
 			console.log("one match was found");
@@ -642,7 +677,7 @@ function generateNextPromptMessage(person,mode){
 
 	if (mode == "current"){
 		// if the mode is current, we should give more informaiton about the current contact
-		prompt = ". You can say - when is " + getRandomName(data) + "'s birthday.";
+		prompt = ". You can ask - when is " + getRandomName(data) + "'s birthday. or say " + getRandomName(data);
 	}
 	//if the mode is general, we should provide general help information
 	else if (mode == "general"){
@@ -697,7 +732,7 @@ function sayDay(dayNumber){
 }
 
 function getGenericHelpMessage(data){
-	let sentences = ["ask - when is " + getRandomName(data) + "'s birthday.","say - who's birthday is next"];
+	let sentences = ["ask - when is " + getRandomName(data) + "'s birthday.","say - " + getRandomName(data)];
 	return optimizeForSpeech("You can " + sentences[getRandom(0,sentences.length-1)]);
 }
 
@@ -792,7 +827,7 @@ function sanitizeSearchQuery(searchQuery){
 }
 
 function optimizeForSpeech(str){
-	let optimizedString = str.replace("montag","mon tag");
+	let optimizedString = str.replace("montag","mahhn tag");
 	return optimizedString;
 }
 
