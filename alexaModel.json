@@ -1,0 +1,424 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "birthday buddy",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "how do I search"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
+                    "samples": [
+                        "repeat that",
+                        "say that again",
+                        "can you say that again",
+                        "please repeat"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StartOverIntent",
+                    "samples": [
+                        "startover",
+                        "new search",
+                        "search again"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
+                },
+                {
+                    "name": "SearchByCityIntent",
+                    "slots": [
+                        {
+                            "name": "cityName",
+                            "type": "AMAZON.US_CITY"
+                        }
+                    ],
+                    "samples": [
+                        "who is in {cityName} ",
+                        "find me an evangelist in {cityName} ",
+                        "find me someone in {cityName} ",
+                        "{cityName} ",
+                        "{cityName} evangelist"
+                    ]
+                },
+                {
+                    "name": "SearchByInfoTypeIntent",
+                    "slots": [
+                        {
+                            "name": "firstName",
+                            "type": "AMAZON.US_FIRST_NAME"
+                        },
+                        {
+                            "name": "lastName",
+                            "type": "LAST_NAME"
+                        },
+                        {
+                            "name": "infoType",
+                            "type": "LIST_OF_INFO_TYPES"
+                        },
+                        {
+                            "name": "whatPhrase",
+                            "type": "WHAT_PHRASE"
+                        }
+                    ],
+                    "samples": [
+                        "{whatPhrase} {firstName} {lastName} {infoType}",
+                        "{whatPhrase} {lastName} {infoType}",
+                        "{whatPhrase} {firstName}  {infoType} handle",
+                        "{whatPhrase} {firstName} {infoType} username"
+                    ]
+                },
+                {
+                    "name": "SearchByNameIntent",
+                    "slots": [
+                        {
+                            "name": "firstName",
+                            "type": "AMAZON.US_FIRST_NAME"
+                        },
+                        {
+                            "name": "lastName",
+                            "type": "LAST_NAME"
+                        },
+                        {
+                            "name": "infoType",
+                            "type": "LIST_OF_INFO_TYPES"
+                        },
+                        {
+                            "name": "whoPhrase",
+                            "type": "WHO_PHRASE"
+                        },
+                        {
+                            "name": "whatPhrase",
+                            "type": "WHAT_PHRASE"
+                        },
+                        {
+                            "name": "surName",
+                            "type": "SURNAME"
+                        }
+                    ],
+                    "samples": [
+                        "for {firstName} {lastName}",
+                        "for {surName} {firstName}",
+                        "when is the birthday for {firstName}",
+                        "when is the birthday for {surName}  {firstName} ",
+                        "when is the birthday for  {firstName} {lastName}",
+                        "{surName} {lastName}",
+                        "{surName} {firstName}",
+                        "when is {surName} birthday",
+                        "when is {surName} s birthday",
+                        "when is {surName}  {lastName}  birthday",
+                        "when is {surName}  {firstName} s  birthday",
+                        "when is {surName}  {firstName}  birthday",
+                        "when's the birthday of {firstName} {lastName}",
+                        "when is {firstName} {lastName}  birthday",
+                        "when is {firstName} {lastName} birthday",
+                        "{firstName}",
+                        "{lastName}",
+                        "{firstName} {lastName}",
+                        "{whoPhrase} {firstName} ",
+                        "{whoPhrase} {firstName} {lastName} ",
+                        "{whoPhrase} {lastName} ",
+                        "{whatPhrase} {firstName} {lastName} {infoType} username",
+                        "{whatPhrase} {infoType} for {firstName} ",
+                        "{whatPhrase} {firstName} {lastName} {infoType} handle"
+                    ]
+                },
+                {
+                    "name": "TellMeMoreIntent",
+                    "slots": [],
+                    "samples": [
+                        "contact info",
+                        "tell me more",
+                        "more details"
+                    ]
+                },
+                {
+                    "name": "TellMeThisIntent",
+                    "slots": [
+                        {
+                            "name": "infoType",
+                            "type": "LIST_OF_INFO_TYPES"
+                        },
+                        {
+                            "name": "whatPhrase",
+                            "type": "WHAT_PHRASE"
+                        }
+                    ],
+                    "samples": [
+                        "{whatPhrase} her {infoType} handle",
+                        "{whatPhrase} her {infoType} username",
+                        "{whatPhrase} {infoType} username",
+                        "{whatPhrase} his {infoType} handle",
+                        "tell me his {infoType} username",
+                        "tell me her {infoType} handle"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "AMAZON.US_FIRST_NAME",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "paul"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "jeff"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "memo"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "rob"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "dave"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "amit"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "liz"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "dean"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LAST_NAME",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "montag",
+                                "synonyms": [
+                                    "montags",
+                                    "mantag",
+                                    "mantog",
+                                    "montag's"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "wolfson",
+                                "synonyms": [
+                                    "wolfsons",
+                                    "wolf son"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "scrivanich",
+                                "synonyms": [
+                                    "scrivanichs"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "martin",
+                                "synonyms": [
+                                    "martins"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "thoubboron",
+                                "synonyms": [
+                                    "thoubborons"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "cabrera",
+                                "synonyms": [
+                                    "cabreras"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "kayne",
+                                "synonyms": [
+                                    "kaynes",
+                                    "canes",
+                                    "cane"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "cantow",
+                                "synonyms": [
+                                    "cantows"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "rifkin",
+                                "synonyms": [
+                                    "rifkins"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "modrak",
+                                "synonyms": [
+                                    "modraks"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_INFO_TYPES",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "twitter"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "git hub"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "linkedin"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "github"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "WHAT_PHRASE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "what is"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "what's"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "give me"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "tell me"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "WHO_PHRASE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "find"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "who is"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "SURNAME",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "brother"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "dad"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "mom"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "uncle"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "grandma"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "friend"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "aunt"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "cousin"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
