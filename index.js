@@ -7,7 +7,8 @@ const Alexa = require("alexa-sdk"); // import the library
 
 //Replace with your app ID (OPTIONAL).  You can find this value at the top of your skill's page on http://developer.amazon.com.
 //Make sure to enclose your value in quotes, like this:  const APP_ID = "amzn1.ask.skill.bb4045e6-b3e8-4133-b650-72923c5980f1";
-const APP_ID = "amzn1.ask.skill.da5bd940-37b8-4d6b-90b3-897999b102e2";
+//NOTE: This will limit your skill to only work with that particular app ID
+const APP_ID = "";
 
 // =====================================================================================================
 // --------------------------------- Section 1. Data and Text strings  ---------------------------------

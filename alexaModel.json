@@ -114,6 +114,8 @@
                         }
                     ],
                     "samples": [
+                        "for {firstName} {lastName}",
+                        "for {surName} {firstName}",
                         "when is the birthday for {firstName}",
                         "when is the birthday for {surName}  {firstName} ",
                         "when is the birthday for  {firstName} {lastName}",
