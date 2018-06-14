@@ -1,5 +1,6 @@
 "use strict";
 const Alexa = require("alexa-sdk"); // import the library
+const moment = require("moment");
 
 //=========================================================================================================================================
 //TODO: The items below this comment need your attention
@@ -68,6 +69,11 @@ const newSessionHandlers = {
 		console.log("SEARCH INTENT");
 		this.handler.state = states.SEARCHMODE;
 		this.emitWithState("SearchByNameIntent");
+	},
+	"FindNextBirthdayIntent": function() {
+		console.log("SEARCH INTENT");
+		this.handler.state = states.SEARCHMODE;
+		this.emitWithState("FindNextBirthdayIntent");
 	},
 	"TellMeMoreIntent": function() {
 		this.handler.state = states.SEARCHMODE;
@@ -143,6 +149,10 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 	},
 	"SearchByNameIntent": function() {
 		searchByNameIntentHandler.call(this);
+	},
+	"FindNextBirthdayIntent": function() {
+		console.log('in find birthday intent');
+		findNextBirthdayIntentHandler.call(this);
 	},
 	"SearchByCityIntent": function() {
 		searchByCityIntentHandler.call(this);
@@ -357,6 +367,9 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 	"SearchByNameIntent": function() {
 		searchByNameIntentHandler.call(this);
 	},
+	"FindNextBirthdayIntent": function() {
+		findNextBirthdayIntentHandler.call(this);
+	},
 	"SearchByCityIntent": function() {
 		searchByCityIntentHandler.call(this);
 	},
@@ -464,6 +477,57 @@ function figureOutWhichSlotToSearchBy(firstName,lastName,cityName) {
 		console.log("search by multiple slots " + slotsToSearchBy);
 		return slotsToSearchBy;
 	}
+}
+
+function findMatchingDate(dataset, currentDate, searchQuery) {
+	let result = [];
+	let closestDateFound = -366;
+
+	for (let i = 0; i < dataset.length; i++) {
+		let birthday = moment().subtract(4,'hours');;
+		birthday.set('month', dataset[i]['month'] - 1);
+		birthday.set('date', dataset[i]['day']);
+		const daysTillBirthday = birthday.diff(currentDate, 'days');
+
+		if (daysTillBirthday > 0) {
+			if (closestDateFound < 0 || daysTillBirthday < closestDateFound) {
+				console.log(closestDateFound, 'being replaced with', daysTillBirthday);
+				closestDateFound = daysTillBirthday;
+				result[0] = dataset[i];
+			}
+		} else if (daysTillBirthday > closestDateFound) {
+			console.log(closestDateFound, 'being replaced with', daysTillBirthday);
+			closestDateFound = daysTillBirthday;
+			result[0] = dataset[i];
+		}
+	}
+	console.log('Closest bday is', result);
+	return {
+		daysToGo: closestDateFound,
+		results: result
+	};
+}
+
+
+function findNextBirthdayIntentHandler(){
+	console.log('in next birthday intent handler');
+
+	const dateEST = moment().subtract(4,'hours');
+	const currentMonth = dateEST.format('M');
+	const currentDay = dateEST.format('D');
+	console.log('current month: ' + currentMonth, 'current day: ' +currentDay);
+
+	const searchResults = findMatchingDate(data, dateEST, 'next');
+	
+	var lastSearch = this.attributes.lastSearch = searchResults;
+	this.handler.state = states.DESCRIPTION;
+	this.attributes.lastSearch.lastIntent = "FindNextBirthdayIntent";
+	const output = generateUpcomingBirthdayMessage('next birthday', searchResults);
+
+	this.attributes.lastSearch.lastSpeech = output;
+	console.log('last search: ',this.attributes.lastSearch);
+	this.response.speak(output).listen(output);
+	this.emit(':responseReady');
 }
 
 function searchByNameIntentHandler(){
@@ -692,6 +756,44 @@ function generateSendingCardToAlexaAppMessage(person,mode){
 	return sentence;
 }
 
+
+function generateUpcomingBirthdayMessage(searchQuery,searchResults){
+	let sentence;
+	let details;
+	let prompt;
+	const results = searchResults.results;
+
+	if (results){
+		switch (true) {
+		case (results.length == 0):
+			sentence = "Hmm. I couldn't find anyone who had " + searchQuery + ". " + getGenericHelpMessage(data);
+			break;
+		case (results.length == 1):
+			let person = results[0];
+
+			let dayOfWeek = moment();
+			dayOfWeek.set('date', person.day);
+			dayOfWeek.set('month', person.month - 1);
+			dayOfWeek = dayOfWeek.format('dddd');
+
+			details = "Your next birthday to remember is " +  person.firstName + " " + person.lastName 
+				+ ". " + genderize("his-her", person.gender) + " birthday is in " + searchResults.daysToGo
+				+ " days, on " + dayOfWeek + " " + sayMonth(person.month) + " " + sayDay(person.day);
+			prompt = generateNextPromptMessage(person,"current");
+			sentence = details + prompt;
+			console.log(sentence);
+			break;
+		case (results.length > 1):
+			sentence = "I found " + results.length + " matching results";
+			break;
+		}
+	}
+	else{
+		sentence = "Sorry, I didn't quite get that. " + getGenericHelpMessage(data);
+	}
+	return optimizeForSpeech(sentence);
+}
+
 function generateSearchResultsMessage(searchQuery,results){
 	let sentence;
 	let details;
@@ -727,7 +829,7 @@ function sayMonth(monthNumber){
 
 function sayDay(dayNumber){
 	const days = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twevlfth", "thirteenth", "fourteenth",
-		"fiftheenth", "sixteenth", "seventeeth", "eightteenth", "nineteenth", "twentieth", "twenty first", "twenty second", "twenty third", "twenty fourth", 
+		"fifthteenth", "sixteenth", "seventeeth", "eightteenth", "nineteenth", "twentieth", "twenty first", "twenty second", "twenty third", "twenty fourth", 
 		"twenty fifth", "twenty sixth", "twenty seventh", "twenty eighth", "twenty ninth", "thirtieth", "thirty first"];
 	return days[dayNumber - 1] ? days[dayNumber - 1] : dayNumber;
 }
