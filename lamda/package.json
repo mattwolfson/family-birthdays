@@ -1,0 +1,27 @@
+{
+  "name": "family-birthdays",
+  "version": "1.0.0",
+  "description": "Alexa skill to find family birthdays",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattwolfson/family-birthdays.git"
+  },
+  "keywords": [
+    "family",
+    "birthdays"
+  ],
+  "author": "Matt Wolfson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattwolfson/family-birthdays/issues"
+  },
+  "homepage": "https://github.com/mattwolfson/family-birthdays#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.25",
+    "moment": "^2.22.2"
+  }
+}

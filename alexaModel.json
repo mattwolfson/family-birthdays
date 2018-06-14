@@ -169,6 +169,16 @@
                         "tell me his {infoType} username",
                         "tell me her {infoType} handle"
                     ]
+                },
+                {
+                    "name": "FindNextBirthdayIntent",
+                    "slots": [],
+                    "samples": [
+                        "when is the next birthday",
+                        "who has the next birthday",
+                        "what is the next birthday",
+                        "who's birthday is next"
+                    ]
                 }
             ],
             "types": [
