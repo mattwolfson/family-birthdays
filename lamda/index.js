@@ -75,6 +75,11 @@ const newSessionHandlers = {
 		this.handler.state = states.SEARCHMODE;
 		this.emitWithState("FindNextBirthdayIntent");
 	},
+	"FindFutureBirthdayIntent": function() {
+		console.log("SEARCH INTENT");
+		this.handler.state = states.SEARCHMODE;
+		this.emitWithState("FindFutureBirthdayIntent");
+	},
 	"TellMeMoreIntent": function() {
 		this.handler.state = states.SEARCHMODE;
 		this.response.speak(WELCOME_MESSAGE).listen(getGenericHelpMessage(data));
@@ -153,6 +158,10 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 	"FindNextBirthdayIntent": function() {
 		console.log('in find birthday intent');
 		findNextBirthdayIntentHandler.call(this);
+	},
+	"FindFutureBirthdayIntent": function() {
+		console.log('in find birthday intent');
+		findFutureBirthdayIntentHandler.call(this);
 	},
 	"SearchByCityIntent": function() {
 		searchByCityIntentHandler.call(this);
@@ -370,6 +379,9 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 	"FindNextBirthdayIntent": function() {
 		findNextBirthdayIntentHandler.call(this);
 	},
+	"FindFutureBirthdayIntent": function() {
+		findFutureBirthdayIntentHandler.call(this);
+	},
 	"SearchByCityIntent": function() {
 		searchByCityIntentHandler.call(this);
 	},
@@ -508,6 +520,29 @@ function findMatchingDate(dataset, currentDate, searchQuery) {
 	};
 }
 
+function findBirthdayByDateRange(dataset, currentDate, number, timePeriod) {
+	console.log(number, timePeriod);
+	let results = [];
+	let closestDateFound = -366;
+
+	for (let i = 0; i < dataset.length; i++) {
+		let birthday = moment().subtract(4,'hours');
+		const birthdayMonthNumber = dataset[i]['month'] - 1;
+		birthday.set('month', birthdayMonthNumber);
+		birthday.set('date', dataset[i]['day']);
+		const daysTillBirthday = birthday.diff(currentDate, 'days');
+		if (timePeriod === 'days' && daysTillBirthday >= 0 && daysTillBirthday <= number) {
+			results.push(dataset[i]);
+		} else if (timePeriod === 'months' && birthdayMonthNumber === number) {
+			results.push(dataset[i]);
+		}
+	}
+	console.log(results.length, 'results found');
+	return {
+		daysToGo: closestDateFound,
+		results: results
+	};
+}
 
 function findNextBirthdayIntentHandler(){
 	console.log('in next birthday intent handler');
@@ -522,7 +557,71 @@ function findNextBirthdayIntentHandler(){
 	var lastSearch = this.attributes.lastSearch = searchResults;
 	this.handler.state = states.DESCRIPTION;
 	this.attributes.lastSearch.lastIntent = "FindNextBirthdayIntent";
-	const output = generateUpcomingBirthdayMessage('next birthday', searchResults);
+	const output = generateUpcomingBirthdayMessage('next birthday', null, searchResults);
+
+	this.attributes.lastSearch.lastSpeech = output;
+	console.log('last search: ',this.attributes.lastSearch);
+	this.response.speak(output).listen(output);
+	this.emit(':responseReady');
+}
+
+function findFutureBirthdayIntentHandler() {
+	console.log('in future birthday intent handler');
+
+	let month = isSlotValid(this.event.request, "month");
+	let number = isSlotValid(this.event.request, "number");
+	let timePeriod = isSlotValid(this.event.request, "timePeriod");
+	console.log('slots', month, number, timePeriod);
+
+	const dateEST = moment().subtract(4,'hours');
+	const currentMonth = dateEST.format('M');
+	const currentDay = dateEST.format('D');
+	console.log('current month: ' + currentMonth, 'current day: ' +currentDay);
+
+	let timeNumber;
+	let rangeValue;
+	let searchRange;
+	let timePeriodValue;
+	let numberValue;
+
+	if (month) {
+		timeNumber = getMonthNumber(this.event.request.intent.slots['month'].value);
+		rangeValue = 'months';
+		searchRange = this.event.request.intent.slots['month'].value;
+	} else if (number && timePeriod) {
+		rangeValue = 'days';
+		timePeriodValue = this.event.request.intent.slots['timePeriod'].value;
+		numberValue = this.event.request.intent.slots['number'].value;
+		if (timePeriodValue.indexOf('month') > -1) {
+			timeNumber = numberValue*30;
+		} else if (timePeriodValue.indexOf('week') > -1) {
+			timeNumber = numberValue*7;
+		}
+		searchRange = "the next " + numberValue + " " + timePeriodValue;
+	} else if (timePeriod) {
+		timePeriodValue = this.event.request.intent.slots['timePeriod'].value;
+		if (timePeriodValue.indexOf('month') > -1) {
+			timeNumber = currentMonth;
+			rangeValue = 'months';
+			searchRange = "a month";
+		} else if (timePeriodValue.indexOf('week') > -1) {
+			timeNumber = 7;
+			rangeValue = 'days';
+			searchRange = "a week";
+		}
+	} else {
+		//Default to search next week
+		timeNumber = 7;
+		rangeValue = 'days';
+		searchRange = "the default range of a week"
+	}
+
+	const searchResults = findBirthdayByDateRange(data, dateEST, timeNumber, rangeValue);
+	
+	var lastSearch = this.attributes.lastSearch = searchResults;
+	this.handler.state = states.DESCRIPTION;
+	this.attributes.lastSearch.lastIntent = "FindNextBirthdayIntent";
+	const output = generateUpcomingBirthdayMessage("future birthday", searchRange, searchResults);
 
 	this.attributes.lastSearch.lastSpeech = output;
 	console.log('last search: ',this.attributes.lastSearch);
@@ -757,7 +856,7 @@ function generateSendingCardToAlexaAppMessage(person,mode){
 }
 
 
-function generateUpcomingBirthdayMessage(searchQuery,searchResults){
+function generateUpcomingBirthdayMessage(searchQuery, searchRange, searchResults){
 	let sentence;
 	let details;
 	let prompt;
@@ -779,18 +878,30 @@ function generateUpcomingBirthdayMessage(searchQuery,searchResults){
 			details = "Your next birthday to remember is " +  person.firstName + " " + person.lastName 
 				+ ". " + genderize("his-her", person.gender) + " birthday is in " + searchResults.daysToGo
 				+ " days, on " + dayOfWeek + " " + sayMonth(person.month) + " " + sayDay(person.day);
-			prompt = generateNextPromptMessage(person,"current");
-			sentence = details + prompt;
+			sentence = details;
 			console.log(sentence);
 			break;
 		case (results.length > 1):
-			sentence = "I found " + results.length + " matching results";
+			if (searchQuery === 'next birthday') {
+				sentence = "I found " + results.length + " matching results";
+			} else if (searchQuery === 'future birthday')  {
+				sentence = "I found " + results.length + " birthdays in " + searchRange + ". They are ";
+
+				for (let i = 0; i < results.length; i++) {
+					let person = results[i];
+					if (i + 1 === results.length) {
+						sentence += "and "
+					}
+					sentence += person.firstName + " " + person.lastName + " on " + sayMonth(person.month) + " " + sayDay(person.day) + ", ";
+				}
+			}
 			break;
 		}
 	}
 	else{
 		sentence = "Sorry, I didn't quite get that. " + getGenericHelpMessage(data);
 	}
+	console.log(sentence);
 	return optimizeForSpeech(sentence);
 }
 
@@ -825,6 +936,11 @@ function generateSearchResultsMessage(searchQuery,results){
 function sayMonth(monthNumber){
 	const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	return months[monthNumber - 1] ?  months[monthNumber - 1] : monthNumber;
+}
+
+function getMonthNumber(monthName){
+	const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	return months.indexOf(monthName);
 }
 
 function sayDay(dayNumber){
