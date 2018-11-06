@@ -29,7 +29,7 @@ const skillName = "Birthday Buddy";
 const WELCOME_MESSAGE = "Welcome to " + skillName + ". Which Family Member's birthday would you like to know?. For example, " + getGenericHelpMessage(data);
 
 //This is the message a user will hear when they ask Alexa for help in your skill.
-const HELP_MESSAGE = "I can help you find Alexa Evangelists and Solutions Architects. ";
+const HELP_MESSAGE = "I can help you find Family and friends birthdays. ";
 
 //This is the message a user will hear when they begin a new search
 const NEW_SEARCH_MESSAGE = getGenericHelpMessage(data);
@@ -71,12 +71,12 @@ const newSessionHandlers = {
 		this.emitWithState("SearchByNameIntent");
 	},
 	"FindNextBirthdayIntent": function() {
-		console.log("SEARCH INTENT");
+		console.log("Find Next Brithday INTENT");
 		this.handler.state = states.SEARCHMODE;
 		this.emitWithState("FindNextBirthdayIntent");
 	},
 	"FindFutureBirthdayIntent": function() {
-		console.log("SEARCH INTENT");
+		console.log("Find future birthday INTENT");
 		this.handler.state = states.SEARCHMODE;
 		this.emitWithState("FindFutureBirthdayIntent");
 	},
@@ -116,7 +116,7 @@ const newSessionHandlers = {
 	"AMAZON.StartOverIntent": function() {
 		this.handler.state = states.SEARCHMODE;
 		var output = "Ok, starting over. " + getGenericHelpMessage(data);
-		this.response.speak(output).listen(output);
+		this.response.speak(output);
 		this.emit(':responseReady');
 	},
 	"AMAZON.HelpIntent": function() {
@@ -156,11 +156,11 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 		searchByNameIntentHandler.call(this);
 	},
 	"FindNextBirthdayIntent": function() {
-		console.log('in find birthday intent');
+		console.log('in find birthday next intent');
 		findNextBirthdayIntentHandler.call(this);
 	},
 	"FindFutureBirthdayIntent": function() {
-		console.log('in find birthday intent');
+		console.log('in find birthday future intent');
 		findFutureBirthdayIntentHandler.call(this);
 	},
 	"SearchByCityIntent": function() {
@@ -192,7 +192,7 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 	"AMAZON.StartOverIntent": function() {
 		this.handler.state = states.SEARCHMODE;
 		var output = "Ok, starting over. " + getGenericHelpMessage(data);
-		this.response.speak(output).listen(output);
+		this.response.speak(output);
 		this.emit(':responseReady');
 	},
 	"SessionEndedRequest": function() {
@@ -209,12 +209,12 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 	"AMAZON.StartOverIntent": function() {
 		this.handler.state = states.SEARCHMODE;
 		var output = "Ok, starting over. " + getGenericHelpMessage(data);
-		this.response.speak(output).listen(output);
+		this.response.speak(output);
 		this.emit(':responseReady');
 	},
 	"AMAZON.YesIntent": function() {
 		var output = "Hmm. I think you said - yes, but can you please say the name of the person you'd like to learn more about?";
-		this.response.speak(output).listen(output);
+		this.response.speak(output);
 		this.emit(':responseReady');
 	},
 	"AMAZON.NoIntent": function() {
@@ -267,14 +267,14 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 				console.log("multiple results were found again");
 				this.handler.state = states.MULTIPLE_RESULTS;
 				output = this.attributes.lastSearch.lastSpeech;
-				this.response.speak(output).listen(output);
+				this.response.speak(output);
 			} else if (searchResults.count == 1) { //one result found
 				this.attributes.lastSearch = searchResults;
 				lastSearch = this.attributes.lastSearch;
 				this.handler.state = states.DESCRIPTION;
 				output = generateSearchResultsMessage(searchQuery,searchResults.results);
 				this.attributes.lastSearch.lastSpeech = output;
-				this.response.speak(output).listen(output);
+				this.response.speak(output);
 
 			} else { //no match found
 				lastSearch = this.attributes.lastSearch;
@@ -412,7 +412,7 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 	"AMAZON.StartOverIntent": function() {
 		this.handler.state = states.SEARCHMODE;
 		var output = "Ok, starting over. " + getGenericHelpMessage(data);
-		this.response.speak(output).listen(output);
+		this.response.speak(output);
 		this.emit(':responseReady');
 	},
 	"SessionEndedRequest": function() {
@@ -561,7 +561,7 @@ function findNextBirthdayIntentHandler(){
 
 	this.attributes.lastSearch.lastSpeech = output;
 	console.log('last search: ',this.attributes.lastSearch);
-	this.response.speak(output).listen(output);
+	this.response.speak(output);
 	this.emit(':responseReady');
 }
 
@@ -625,7 +625,7 @@ function findFutureBirthdayIntentHandler() {
 
 	this.attributes.lastSearch.lastSpeech = output;
 	console.log('last search: ',this.attributes.lastSearch);
-	this.response.speak(output).listen(output);
+	this.response.speak(output);
 	this.emit(':responseReady');
 }
 
@@ -667,7 +667,7 @@ function searchByNameIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
 			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
 			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 		} else if (searchResults.count == 1) { //one result found
 			this.handler.state = states.DESCRIPTION; // change state to description
 			console.log("one match was found");
@@ -680,7 +680,7 @@ function searchByNameIntentHandler(){
 				console.log("no infoType was provided.");
 				output = generateSearchResultsMessage(searchQuery,searchResults.results);
 				this.attributes.lastSearch.lastSpeech = output;
-				this.response.speak(output).listen(output);
+				this.response.speak(output);
 			}
 		}
 		else{//no match found
@@ -690,7 +690,7 @@ function searchByNameIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results);
 			this.attributes.lastSearch.lastSpeech = output;
 			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 		}
 	}
 	else {
@@ -726,14 +726,14 @@ function searchByCityIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
 			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
 			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 		} else if (searchResults.count == 1) { //one result found
 			console.log("one match found");
 			this.handler.state = states.DESCRIPTION; // change state to description
 			output = generateSearchResultsMessage(searchQuery,searchResults.results);
 			this.attributes.lastSearch.lastSpeech = output;
 			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 
 		}
 		else{//no match found
@@ -743,7 +743,7 @@ function searchByCityIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results);
 			this.attributes.lastSearch.lastSpeech = output;
 			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 
 		}
 	}
@@ -786,7 +786,7 @@ function searchByInfoTypeIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
 			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
 			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 		} else if (searchResults.count == 1) { //one result found
 			this.handler.state = states.DESCRIPTION; // change state to description
 			console.log("one match was found");
@@ -808,7 +808,7 @@ function searchByInfoTypeIntentHandler(){
 				output = generateSearchResultsMessage(searchQuery,searchResults.results);
 				this.attributes.lastSearch.lastSpeech = output;
 				// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-				this.response.speak(output).listen(output);
+				this.response.speak(output);
 			}
 		}
 		else{//no match found
@@ -818,7 +818,7 @@ function searchByInfoTypeIntentHandler(){
 			output = generateSearchResultsMessage(searchQuery,searchResults.results);
 			this.attributes.lastSearch.lastSpeech = output;
 			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
+			this.response.speak(output);
 		}
 	}
 	else {
