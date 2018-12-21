@@ -1,0 +1,27 @@
+{
+  "name": "family-birthdays-flash-briefing",
+  "version": "1.0.0",
+  "description": "Alexa skill to send texts for family birthdays",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattwolfson/family-birthdays.git"
+  },
+  "keywords": [
+    "family",
+    "birthdays"
+  ],
+  "author": "Matt Wolfson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattwolfson/family-birthdays/issues"
+  },
+  "homepage": "https://github.com/mattwolfson/family-birthdays#readme",
+  "dependencies": {
+    "aws-sdk": "^2.353.0",
+    "moment": "^2.22.2"
+  }
+}
