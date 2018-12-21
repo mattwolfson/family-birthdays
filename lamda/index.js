@@ -496,18 +496,16 @@ function findMatchingDate(dataset, currentDate, searchQuery) {
 	let closestDateFound = -366;
 
 	for (let i = 0; i < dataset.length; i++) {
-		let birthday = moment().subtract(4,'hours');;
+		let birthday = moment().subtract(4,'hours').startOf('day');
 		birthday.set('month', dataset[i]['month'] - 1);
 		birthday.set('date', dataset[i]['day']);
-		const daysTillBirthday = birthday.diff(currentDate, 'days');
+		let daysTillBirthday = birthday.diff(currentDate, 'days');
+		if (daysTillBirthday < 0) {
+			birthday.add(1,'years');
+			daysTillBirthday = birthday.diff(currentDate, 'days');
+		}
 
-		if (daysTillBirthday > 0) {
-			if (closestDateFound < 0 || daysTillBirthday < closestDateFound) {
-				console.log(closestDateFound, 'being replaced with', daysTillBirthday);
-				closestDateFound = daysTillBirthday;
-				result[0] = dataset[i];
-			}
-		} else if (daysTillBirthday > closestDateFound) {
+		if (closestDateFound < 0 || daysTillBirthday < closestDateFound) {
 			console.log(closestDateFound, 'being replaced with', daysTillBirthday);
 			closestDateFound = daysTillBirthday;
 			result[0] = dataset[i];
@@ -547,7 +545,7 @@ function findBirthdayByDateRange(dataset, currentDate, number, timePeriod) {
 function findNextBirthdayIntentHandler(){
 	console.log('in next birthday intent handler');
 
-	const dateEST = moment().subtract(4,'hours');
+	const dateEST = moment().subtract(4,'hours').startOf('day');
 	const currentMonth = dateEST.format('M');
 	const currentDay = dateEST.format('D');
 	console.log('current month: ' + currentMonth, 'current day: ' +currentDay);
