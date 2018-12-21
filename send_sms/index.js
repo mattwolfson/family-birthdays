@@ -9,7 +9,7 @@ exports.handler = () => {
         console.log('Next Birthday text should be sent with this text: ', nextBirthday.nextBirthdayText);
         var params = {
             Message: nextBirthday.nextBirthdayText, /* required */
-            PhoneNumber: '+19736341773',
+            PhoneNumber: '+1973****',
         };
 
         // Create promise and SNS service object
