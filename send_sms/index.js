@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-const nextBirthday = require('./get_next_birthday.js');
+const nextBirthday = require('../utils/get_next_birthday.js');
 // Set region
 AWS.config.update({region: 'us-east-1'});
 
@@ -9,7 +9,7 @@ exports.handler = () => {
         console.log('Next Birthday text should be sent with this text: ', nextBirthday.nextBirthdayText);
         var params = {
             Message: nextBirthday.nextBirthdayText, /* required */
-            PhoneNumber: '+1973****',
+            PhoneNumber: '+1973******',
         };
 
         // Create promise and SNS service object
@@ -17,12 +17,13 @@ exports.handler = () => {
 
         // handle promise's fulfilled/rejected states
         publishTextPromise.then(
-        function(data) {
-            console.log("MessageID is " + data.MessageId);
-        }).catch(
-            function(err) {
-            console.error(err, err.stack);
-        });
+            function(data) {
+                console.log("MessageID is " + data.MessageId);
+            }).catch(
+                function(err) {
+                console.error(err, err.stack);
+            }
+        );
     } else {
         console.log('Next Birthday text should not be sent today, but will be in '
             , nextBirthday.daysToGo, ' days.');

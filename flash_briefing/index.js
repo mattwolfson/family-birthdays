@@ -1,6 +1,6 @@
 const DOMParser = require('xmldom').DOMParser;
 const fs = require('fs');
-const nextBirthday = require('./get_next_birthday.js');
+const nextBirthday = require('../utils/get_next_birthday.js');
 const moment = require("moment");
 const uuidv4 = require('uuid/v4');
 const AWS = require('aws-sdk');
