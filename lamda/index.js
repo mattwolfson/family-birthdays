@@ -17,7 +17,7 @@ const APP_ID = "";
 //TODO: Replace this data with your own.
 //======================================================================================================
 
-const data= require('data.json');
+const data= require('./data');
 
 //======================================================================================================
 //TODO: Replace these text strings to edit the welcome and help messages
@@ -544,22 +544,16 @@ function findBirthdayByDateRange(dataset, currentDate, number, timePeriod) {
 
 function findNextBirthdayIntentHandler(){
 	console.log('in next birthday intent handler');
-
-	const dateEST = moment().subtract(4,'hours').startOf('day');
-	const currentMonth = dateEST.format('M');
-	const currentDay = dateEST.format('D');
-	console.log('current month: ' + currentMonth, 'current day: ' +currentDay);
-
-	const searchResults = findMatchingDate(data, dateEST, 'next');
 	
-	var lastSearch = this.attributes.lastSearch = searchResults;
+	const nextBirthday = require('../utils/get_next_birthday.js');
+
+	var lastSearch = this.attributes.lastSearch = nextBirthday.searchResults;
 	this.handler.state = states.DESCRIPTION;
 	this.attributes.lastSearch.lastIntent = "FindNextBirthdayIntent";
-	const output = generateUpcomingBirthdayMessage('next birthday', null, searchResults);
 
-	this.attributes.lastSearch.lastSpeech = output;
+	this.attributes.lastSearch.lastSpeech = nextBirthday.nextBirthdaySpeech;
 	console.log('last search: ',this.attributes.lastSearch);
-	this.response.speak(output);
+	this.response.speak(nextBirthday.nextBirthdaySpeech);
 	this.emit(':responseReady');
 }
 
@@ -619,7 +613,10 @@ function findFutureBirthdayIntentHandler() {
 	var lastSearch = this.attributes.lastSearch = searchResults;
 	this.handler.state = states.DESCRIPTION;
 	this.attributes.lastSearch.lastIntent = "FindNextBirthdayIntent";
-	const output = generateUpcomingBirthdayMessage("future birthday", searchRange, searchResults);
+	const nextBirthdayFunctions = require('../utils/get_next_birthday.js');
+	console.log('generateUpcomingBirthdayMessageInfo: ', nextBirthdayFunctions);
+
+	const output = nextBirthdayFunctions.generateUpcomingBirthdayMessage("future birthday", searchRange, searchResults);
 
 	this.attributes.lastSearch.lastSpeech = output;
 	console.log('last search: ',this.attributes.lastSearch);
@@ -635,9 +632,9 @@ function searchByNameIntentHandler(){
 
 	let canSearch = figureOutWhichSlotToSearchBy(firstName,lastName,cityName);
 	console.log("canSearch is set to = " + canSearch);
+	let searchQuery = "";
 
 	if (canSearch){
-		let searchQuery = "";
 		let searchResults;
 		if (canSearch.constructor === Array) {
 			let searchQueryArray = [];
@@ -693,8 +690,6 @@ function searchByNameIntentHandler(){
 	}
 	else {
 		console.log("no searchable slot was provided");
-		console.log("searchQuery was  = " + searchQuery);
-		console.log("searchResults.results was  = " + searchResults);
 
 		this.response.speak(generateSearchResultsMessage(searchQuery,false)).listen(generateSearchResultsMessage(searchQuery,false));
 	}
@@ -853,56 +848,6 @@ function generateSendingCardToAlexaAppMessage(person,mode){
 	return sentence;
 }
 
-
-function generateUpcomingBirthdayMessage(searchQuery, searchRange, searchResults){
-	let sentence;
-	let details;
-	let prompt;
-	const results = searchResults.results;
-
-	if (results){
-		switch (true) {
-		case (results.length == 0):
-			sentence = "Hmm. I couldn't find anyone who had " + searchQuery + ". " + getGenericHelpMessage(data);
-			break;
-		case (results.length == 1):
-			let person = results[0];
-
-			let dayOfWeek = moment();
-			dayOfWeek.set('date', person.day);
-			dayOfWeek.set('month', person.month - 1);
-			dayOfWeek = dayOfWeek.format('dddd');
-
-			details = "Your next birthday to remember is " +  person.firstName + " " + person.lastName 
-				+ ". " + genderize("his-her", person.gender) + " birthday is in " + searchResults.daysToGo
-				+ " days, on " + dayOfWeek + " " + sayMonth(person.month) + " " + sayDay(person.day);
-			sentence = details;
-			console.log(sentence);
-			break;
-		case (results.length > 1):
-			if (searchQuery === 'next birthday') {
-				sentence = "I found " + results.length + " matching results";
-			} else if (searchQuery === 'future birthday')  {
-				sentence = "I found " + results.length + " birthdays in " + searchRange + ". They are ";
-
-				for (let i = 0; i < results.length; i++) {
-					let person = results[i];
-					if (i + 1 === results.length) {
-						sentence += "and "
-					}
-					sentence += person.firstName + " " + person.lastName + " on " + sayMonth(person.month) + " " + sayDay(person.day) + ", ";
-				}
-			}
-			break;
-		}
-	}
-	else{
-		sentence = "Sorry, I didn't quite get that. " + getGenericHelpMessage(data);
-	}
-	console.log(sentence);
-	return optimizeForSpeech(sentence);
-}
-
 function generateSearchResultsMessage(searchQuery,results){
 	let sentence;
 	let details;
@@ -980,6 +925,7 @@ function generateSpecificInfoMessage(slots,person){
 }
 
 exports.handler = function(event, context, callback) {
+	console.log('in alexa lambda event handler');
 	let alexa = Alexa.handler(event, context);
 	alexa.appId = APP_ID;
 	alexa.registerHandlers(newSessionHandlers, startSearchHandlers, descriptionHandlers, multipleSearchResultsHandlers);
