@@ -5,7 +5,8 @@ const data= require('./data.json');
 
 let birthdayText;
 let daysToGo = -1;
-
+let searchResults;
+ 
 function findMatchingDate(dataset, currentDate, searchQuery) {
 	let result = [];
 	let closestDateFound = -366;
@@ -41,7 +42,7 @@ function findNextBirthday(){
 	const currentDay = dateEST.format('D');
 	console.log('current month: ' + currentMonth, 'current day: ' +currentDay);
 
-	const searchResults = findMatchingDate(data, dateEST, 'next');
+	searchResults = findMatchingDate(data, dateEST, 'next');
 	
 	const output = generateUpcomingBirthdayMessage('next birthday', null, searchResults);
 
@@ -55,6 +56,7 @@ function findNextBirthday(){
 }
 
 function generateUpcomingBirthdayMessage(searchQuery, searchRange, searchResults){
+	console.log('In generate upcoming brithday message function');
 	let sentence;
 	let details;
 	const results = searchResults.results;
@@ -137,7 +139,9 @@ function getGenericHelpMessage(data){
 module.exports = {
 	nextBirthdaySpeech: findNextBirthday(),
 	nextBirthdayText: birthdayText,
-	daysToGo
+	generateUpcomingBirthdayMessage,
+	daysToGo,
+	searchResults
 }
 
 // =====================================================================================================
