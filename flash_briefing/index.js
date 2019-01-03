@@ -27,7 +27,7 @@ console.log('In next birthday speech with speech: ', nextBirthday.nextBirthdaySp
 var xmlDoc =  new DOMParser().parseFromString(xmlText, "text/xml");
 fs.writeFileSync("/tmp/birthday_to_remember_today.xml", xmlDoc, function(err) {
     if(err) {
-        return console.log(err);
+        return console.log('Error in writing file: ', err);
     }
 
     console.log("The file was saved for ", uuidv4());
@@ -49,6 +49,7 @@ const bufferedFile = fs.readFileSync("/tmp/birthday_to_remember_today.xml",  fun
 });
 
 params.Body = bufferedFile;
+console.log('BufferedFile is: ', bufferedFile);
 
 exports.handler = () => {
     s3.putObject(params, function(err) {
